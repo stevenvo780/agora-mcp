@@ -1,0 +1,45 @@
+{
+  "name": "agora-mcp",
+  "version": "1.0.0",
+  "description": "MCP server that exposes Agora's agent tools (documents, tasks, kanban boards, concepts, workspaces, code worker) to any MCP client. Zero dependencies.",
+  "type": "module",
+  "main": "server.mjs",
+  "bin": {
+    "agora-mcp": "server.mjs"
+  },
+  "scripts": {
+    "start": "node server.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "server.mjs",
+    "agora-tools.json",
+    "config.example.json",
+    "tools/",
+    "examples/",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "agora",
+    "firebase",
+    "ai-agent",
+    "ai-tools",
+    "claude",
+    "llm-tools"
+  ],
+  "author": "stevenvo780",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stevenvo780/agora-mcp.git"
+  },
+  "homepage": "https://github.com/stevenvo780/agora-mcp#readme",
+  "bugs": {
+    "url": "https://github.com/stevenvo780/agora-mcp/issues"
+  }
+}

@@ -1,0 +1,12 @@
+# Secretos — NUNCA commitear la config real
+config.json
+*.local.json
+*.secret.json
+firebase-sa.json
+service-account*.json
+.env
+.env.*
+
+node_modules/
+*.log
+.DS_Store

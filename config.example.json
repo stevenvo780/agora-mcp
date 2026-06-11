@@ -1,0 +1,15 @@
+{
+  "base": "https://agora.example.com",
+  "internalSecret": "REEMPLAZAR — HUB_INTERNAL_SECRET (o BACKEND_INTERNAL_SECRET) de tu deploy de Agora",
+  "secretHeader": "x-hub-internal-secret",
+  "webApiKey": "REEMPLAZAR — NEXT_PUBLIC_FIREBASE_API_KEY de tu app web Firebase (empieza con AIza...)",
+  "uid": "REEMPLAZAR — Firebase uid del usuario en cuyo nombre actúa el MCP",
+  "defaultWorkspace": "personal",
+  "insecureTLS": false,
+  "serviceAccount": {
+    "client_email": "firebase-adminsdk-xxxxx@tu-proyecto.iam.gserviceaccount.com",
+    "private_key": "-----BEGIN PRIVATE KEY-----\\nREEMPLAZAR\\n-----END PRIVATE KEY-----\\n"
+  },
+  "_serviceAccount_alt": "En vez de inline, podés apuntar a un archivo: borra serviceAccount y usa AGORA_SA_FILE=/ruta/sa.json (o GOOGLE_APPLICATION_CREDENTIALS), o serviceAccountFile en este JSON.",
+  "_env_override": "Todo se puede pasar por env: AGORA_BASE, AGORA_INTERNAL_SECRET, AGORA_SECRET_HEADER, AGORA_WEB_API_KEY, AGORA_UID, AGORA_DEFAULT_WORKSPACE, AGORA_SA_FILE | AGORA_SA_JSON, AGORA_MCP_CONFIG (ruta a este archivo)."
+}
