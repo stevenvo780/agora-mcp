@@ -150,11 +150,18 @@ async function handleToolCall(name, a) {
 
 // ---- MCP stdio (JSON-RPC 2.0, newline-delimited) ----
 function send(msg) { process.stdout.write(JSON.stringify(msg) + '\n'); }
-function reply(id, result) { send({ jsonrpc: '2.0', id, result }); }
-function rerror(id, code, message) { send({ jsonrpc: '2.0', id, error: { code, message } }); }
+// Las notificaciones no tienen id y nunca reciben respuesta, incluso si fallan.
+function reply(id, result) { if (id !== undefined) send({ jsonrpc: '2.0', id, result }); }
+function rerror(id, code, message) { if (id !== undefined) send({ jsonrpc: '2.0', id, error: { code, message } }); }
 
 async function handle(msg) {
-  const { id, method, params } = msg;
+  const isObject = msg !== null && typeof msg === 'object' && !Array.isArray(msg);
+  const id = isObject ? msg.id : undefined;
+  const validId = id === undefined || id === null || typeof id === 'string' || (typeof id === 'number' && Number.isFinite(id));
+  if (!isObject || msg.jsonrpc !== '2.0' || typeof msg.method !== 'string' || !validId ||
+      (msg.params !== undefined && (msg.params === null || typeof msg.params !== 'object')))
+    return rerror(validId ? (id ?? null) : null, -32600, 'Invalid Request');
+  const { method, params } = msg;
   if (method === 'initialize')
     return reply(id, { protocolVersion: params?.protocolVersion || '2024-11-05', capabilities: { tools: {} }, serverInfo: { name: 'agora', version: '1.0.0' } });
   if (method === 'tools/list') return reply(id, { tools: MCP_TOOLS });
@@ -165,12 +172,12 @@ async function handle(msg) {
       return reply(id, { content: [{ type: 'text', text: out.text }], isError: !!out.isError });
     } catch (e) { log('call error:', e.message); return reply(id, { content: [{ type: 'text', text: 'Error: ' + e.message }], isError: true }); }
   }
-  if (method && method.startsWith('notifications/')) return; // sin respuesta
   if (id !== undefined) rerror(id, -32601, 'method not found: ' + method);
 }
 
 let buf = '', inflight = 0, ended = false;
-const maybeExit = () => { if (ended && inflight === 0) process.exit(0); };
+// Salir naturalmente permite drenar stdout aunque el cliente lea despacio.
+const maybeExit = () => { if (ended && inflight === 0) process.exitCode = 0; };
 process.stdin.setEncoding('utf8');
 process.stdin.on('data', (chunk) => {
   buf += chunk;
@@ -179,7 +186,7 @@ process.stdin.on('data', (chunk) => {
     const line = buf.slice(0, nl).trim();
     buf = buf.slice(nl + 1);
     if (!line) continue;
-    let msg; try { msg = JSON.parse(line); } catch { log('json inválido:', line.slice(0, 120)); continue; }
+    let msg; try { msg = JSON.parse(line); } catch { log('json inválido:', line.slice(0, 120)); rerror(null, -32700, 'Parse error'); continue; }
     inflight++;
     Promise.resolve(handle(msg)).catch(e => log('handle error:', e.message)).finally(() => { inflight--; maybeExit(); });
   }
