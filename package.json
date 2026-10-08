@@ -8,7 +8,8 @@
     "agora-mcp": "server.mjs"
   },
   "scripts": {
-    "start": "node server.mjs"
+    "start": "node server.mjs",
+    "test": "node --test test-stdio.mjs"
   },
   "engines": {
     "node": ">=18"
